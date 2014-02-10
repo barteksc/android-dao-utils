@@ -55,7 +55,9 @@ public class DaoUtils {
 					f.setAccessible(true);
 					fieldType = f.getType();
 					
-					if(fieldType.isAssignableFrom(String.class)){
+					if(!fieldType.isPrimitive() && c.isNull(index)){
+						f.set(obj, null);
+					} else if(fieldType.isAssignableFrom(String.class)){
 						f.set(obj, c.getString(index));
 					} else if(fieldType.isAssignableFrom(Integer.class) || fieldType.isAssignableFrom(int.class)){
 						f.set(obj, c.getInt(index));
@@ -117,10 +119,12 @@ public class DaoUtils {
 			fieldType = f.getType();
 			
 			try{
-				if(fieldType.isAssignableFrom(String.class)){
+				if(!fieldType.isPrimitive() && f.get(obj) == null){
+					values.putNull(serializeName);
+				} else if(fieldType.isAssignableFrom(String.class)){
 					values.put(serializeName, (String)f.get(obj));
 				} else if(fieldType.isAssignableFrom(Integer.class)){
-			    values.put(serializeName, (Integer)f.get(obj));
+			                values.put(serializeName, (Integer)f.get(obj));
 				} else if(fieldType.isAssignableFrom(int.class)){
 					values.put(serializeName, f.getInt(obj));
 				} else if(fieldType.isAssignableFrom(Boolean.class)){
